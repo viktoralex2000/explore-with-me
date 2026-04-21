@@ -12,17 +12,17 @@ import java.util.List;
 public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
 
     @Query("""
-            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(h.id])
+            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(h.id))
             from EndpointHit h
             where h.created between :start and :end
             group by h.app, h.uri
             order by count(h.id) desc
             """)
     List<ViewStatsDto> findAllStats(@Param("start") LocalDateTime start,
-                                   @Param("end") LocalDateTime end);
+                                    @Param("end") LocalDateTime end);
 
     @Query("""
-            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(distinct h.ip])
+            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(distinct h.ip))
             from EndpointHit h
             where h.created between :start and :end
             group by h.app, h.uri
@@ -32,7 +32,7 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                                           @Param("end") LocalDateTime end);
 
     @Query("""
-            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(h.id])
+            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(h.id))
             from EndpointHit h
             where h.created between :start and :end
               and h.uri in :uris
@@ -44,7 +44,7 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                                        @Param("uris") List<String> uris);
 
     @Query("""
-            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(distinct h.ip])
+            select new ru.practicum.ewm.stats.dto.ViewStatsDto(h.app, h.uri, count(distinct h.ip))
             from EndpointHit h
             where h.created between :start and :end
               and h.uri in :uris
