@@ -1,4 +1,19 @@
 services:
+  stats-db:
+    image: postgres:16.1
+    container_name: ewm-stats-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ewm_stats
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ewm_stats"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   stats-server:
     build: ./ewm-stats-service/ewm-stats-server
     container_name: ewm-stats-server
@@ -8,21 +23,21 @@ services:
       stats-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=secret
+      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/ewm_stats
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: secret
 
-  stats-db:
+  ewm-db:
     image: postgres:16.1
-    container_name: ewm-stats-db
+    container_name: ewm-main-db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
+      POSTGRES_DB: ewm_main
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ewm_main"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -36,21 +51,6 @@ services:
       ewm-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=secret
-
-  ewm-db:
-    image: postgres:16.1
-    container_name: ewm-main-db
-    ports:
-      - "5433:5432"
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/ewm_main
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: secret
