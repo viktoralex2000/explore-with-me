@@ -5,11 +5,11 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=ewm-stats
+      - POSTGRES_DB=ewm_stats
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ewm-stats-db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ewm_stats"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,6 +26,6 @@ services:
         condition: service_healthy
     environment:
       - SERVER_PORT=9090
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm-stats-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm_stats
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=secret
