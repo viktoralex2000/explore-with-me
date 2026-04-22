@@ -3,24 +3,24 @@ package ru.practicum.ewm.stats.mapper;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.model.EndpointHit;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class StatsMapper {
 
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static EndpointHit toEndpointHit(EndpointHitDto dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("EndpointHitDto is null");
-        }
         EndpointHit hit = new EndpointHit();
         hit.setApp(dto.getApp());
         hit.setUri(dto.getUri());
         hit.setIp(dto.getIp());
-        if (dto.getTimestamp() == null) {
-            throw new IllegalArgumentException("timestamp is null");
-        }
-        hit.setCreated(dto.getTimestamp());
+        hit.setCreated(LocalDateTime.parse(dto.getTimestamp(), FORMATTER));
         return hit;
     }
 
-    public static EndpointHitDto toEndpointHitDto(EndpointHit hit) {
+    /*public static EndpointHitDto toEndpointHitDto(EndpointHit hit) {
         EndpointHitDto dto = new EndpointHitDto();
 
         dto.setId(hit.getId());
@@ -30,7 +30,7 @@ public class StatsMapper {
         dto.setTimestamp(hit.getCreated());
 
         return dto;
-    }
+    }*/
 }
 
 
