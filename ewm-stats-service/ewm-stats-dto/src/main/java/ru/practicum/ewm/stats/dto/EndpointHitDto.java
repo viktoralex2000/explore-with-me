@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class EndpointHitDto {
 
-    private Long id;
-
     @NotBlank
     private String app;
 

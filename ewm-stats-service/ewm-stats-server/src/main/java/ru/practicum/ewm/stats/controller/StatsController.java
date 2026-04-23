@@ -1,5 +1,6 @@
 package ru.practicum.ewm.stats.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void hit(@RequestBody EndpointHitDto dto) {
+    public void hit(@Valid @RequestBody EndpointHitDto dto) {
         statsService.hit(dto);
     }
 
