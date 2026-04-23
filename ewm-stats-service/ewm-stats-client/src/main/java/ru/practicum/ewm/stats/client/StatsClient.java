@@ -4,7 +4,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
@@ -15,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class StatsClient {
+
     private final RestTemplate restTemplate;
     private final String serverUrl;
 
@@ -23,17 +23,13 @@ public class StatsClient {
         this.serverUrl = serverUrl;
     }
 
-    public void hit(EndpointHitDto endpointHitDto) {
+    public ResponseEntity<Void> hit(EndpointHitDto endpointHitDto) {
         URI uri = UriComponentsBuilder.fromHttpUrl(serverUrl)
                 .path("/hit")
                 .build()
                 .toUri();
 
-        try {
-            restTemplate.postForEntity(uri, endpointHitDto, Void.class);
-        } catch (RestClientException e) {
-            throw new RuntimeException("Stats service request failed: POST /hit", e);
-        }
+        return restTemplate.postForEntity(uri, endpointHitDto, Void.class);
     }
 
     public List<ViewStatsDto> getStats(String start,
@@ -56,18 +52,14 @@ public class StatsClient {
 
         URI uri = builder.build(true).toUri();
 
-        try {
-            ResponseEntity<List<ViewStatsDto>> response = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
+        ResponseEntity<List<ViewStatsDto>> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {
+                }
+        );
 
-            return response.getBody() == null ? Collections.emptyList() : response.getBody();
-        } catch (RestClientException e) {
-            throw new RuntimeException("Stats service request failed: GET /stats", e);
-        }
+        return response.getBody() == null ? Collections.emptyList() : response.getBody();
     }
 }

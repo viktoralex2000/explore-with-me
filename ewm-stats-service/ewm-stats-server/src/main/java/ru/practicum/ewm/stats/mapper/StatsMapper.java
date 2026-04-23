@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public class StatsMapper {
 
-    private static final DateTimeFormatter FORMATTER =
+    public static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static EndpointHit toEndpointHit(EndpointHitDto dto) {
@@ -16,7 +16,7 @@ public class StatsMapper {
         hit.setApp(dto.getApp());
         hit.setUri(dto.getUri());
         hit.setIp(dto.getIp());
-        hit.setCreated(LocalDateTime.parse(dto.getTimestamp(), FORMATTER));
+        hit.setCreated(LocalDateTime.parse(dto.getTimestamp(), DATE_TIME_FORMATTER));
         return hit;
     }
 }
