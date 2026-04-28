@@ -4,6 +4,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class StatsClient {
 
     private final RestTemplate restTemplate;
