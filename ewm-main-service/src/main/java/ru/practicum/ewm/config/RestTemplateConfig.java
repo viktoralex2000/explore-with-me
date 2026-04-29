@@ -1,4 +1,4 @@
-package ru.practicum.ewm.config;
+/*package ru.practicum.ewm.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,4 +12,4 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
-}
+}*/
