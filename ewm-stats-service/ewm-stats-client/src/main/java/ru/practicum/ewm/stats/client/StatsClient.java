@@ -1,9 +1,9 @@
 package ru.practicum.ewm.stats.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -21,8 +21,9 @@ public class StatsClient {
     private final RestTemplate restTemplate;
     private final String serverUrl;
 
-    public StatsClient(String serverUrl) {
-        this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    public StatsClient(RestTemplate restTemplate,
+                       @Value("${stats.server.url}") String serverUrl) {
+        this.restTemplate = restTemplate;
         this.serverUrl = serverUrl;
     }
 
