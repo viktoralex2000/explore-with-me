@@ -48,16 +48,16 @@ public class EventServiceImpl implements EventService {
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
 
-    public EventServiceImpl(@Value("${stats-server.url}") String statsServerUrl,
-                            EventRepository eventRepository,
+    public EventServiceImpl(EventRepository eventRepository,
                             UserRepository userRepository,
                             CategoryRepository categoryRepository,
-                            RequestRepository requestRepository) {
+                            RequestRepository requestRepository,
+                            StatsClient statsClient) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
-        this.statsClient = new StatsClient(statsServerUrl);
+        this.statsClient = statsClient;
     }
 
     @Override
