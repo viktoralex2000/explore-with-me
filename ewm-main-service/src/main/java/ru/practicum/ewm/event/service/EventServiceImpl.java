@@ -47,7 +47,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
-    private final StatsClient statsClient;
+    StatsClient statsClient = new StatsClient("http://stats-server:9090");
 
     @Override
     public List<EventShortDto> getAllPublic(String text,

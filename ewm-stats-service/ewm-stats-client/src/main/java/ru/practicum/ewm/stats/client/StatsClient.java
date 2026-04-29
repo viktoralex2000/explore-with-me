@@ -3,6 +3,7 @@ package ru.practicum.ewm.stats.client;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,8 +19,8 @@ public class StatsClient {
     private final RestTemplate restTemplate;
     private final String serverUrl;
 
-    public StatsClient(RestTemplate restTemplate, String serverUrl) {
-        this.restTemplate = restTemplate;
+    public StatsClient(String serverUrl) {
+        this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         this.serverUrl = serverUrl;
     }
 
