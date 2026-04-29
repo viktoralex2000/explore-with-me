@@ -2,6 +2,7 @@ package ru.practicum.ewm.event.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,19 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
-    StatsClient statsClient = new StatsClient("http://stats-server:9090");
+    private final StatsClient statsClient;
+
+    public EventServiceImpl(@Value("${stats-server.url}") String statsServerUrl,
+                            EventRepository eventRepository,
+                            UserRepository userRepository,
+                            CategoryRepository categoryRepository,
+                            RequestRepository requestRepository) {
+        this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.requestRepository = requestRepository;
+        this.statsClient = new StatsClient(statsServerUrl);
+    }
 
     @Override
     public List<EventShortDto> getAllPublic(String text,
