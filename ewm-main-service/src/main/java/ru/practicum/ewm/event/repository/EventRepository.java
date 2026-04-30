@@ -15,17 +15,18 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Page<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
-    @Query("""
-            select e from Event e
-            where e.state = :state
-              and (:text is null or (lower(cast(e.annotation as text)) like lower(concat('%', :text, '%'))
-                    or lower(cast(e.description as text)) like lower(concat('%', :text, '%'))))
-              and (:categories is null or e.category.id in :categories)
-              and (:paid is null or e.paid = :paid)
-              and (cast(:rangeStart as timestamp) is null or e.eventDate >= cast(:rangeStart as timestamp))
-              and (cast(:rangeEnd as timestamp) is null or e.eventDate <= cast(:rangeEnd as timestamp))
-            """)
-    Page<Event> searchPublic(@Param("state") EventState state,
+    @Query(value = """
+            SELECT * FROM events e
+            WHERE e.state = :state
+              AND (CAST(:text AS text) IS NULL OR 
+                   (LOWER(e.annotation) LIKE LOWER(CONCAT('%', CAST(:text AS text), '%')) OR
+                    LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS text), '%'))))
+              AND (CAST(:categories AS text) IS NULL OR e.category_id IN (:categories))
+              AND (CAST(:paid AS boolean) IS NULL OR e.paid = :paid)
+              AND (CAST(:rangeStart AS timestamp) IS NULL OR e.event_date >= CAST(:rangeStart AS timestamp))
+              AND (CAST(:rangeEnd AS timestamp) IS NULL OR e.event_date <= CAST(:rangeEnd AS timestamp))
+            """, nativeQuery = true)
+    Page<Event> searchPublic(@Param("state") String state,
                              @Param("text") String text,
                              @Param("categories") List<Long> categories,
                              @Param("paid") Boolean paid,

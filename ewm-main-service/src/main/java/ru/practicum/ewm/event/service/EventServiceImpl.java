@@ -92,7 +92,7 @@ public class EventServiceImpl implements EventService {
         Pageable pageable = PageRequest.of(from / size, size);
 
         List<Event> events = eventRepository.searchPublic(
-                EventState.PUBLISHED,
+                EventState.PUBLISHED.name(),
                 text,
                 (categories == null || categories.isEmpty()) ? null : categories,
                 paid,
