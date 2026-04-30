@@ -73,8 +73,13 @@ public class EventServiceImpl implements EventService {
 
         statsClient.hit(makeHitDto(request));
 
-        LocalDateTime start = rangeStart;
-        LocalDateTime end = rangeEnd;
+        LocalDateTime start = (rangeStart == null)
+                ? LocalDateTime.of(1900, 1, 1, 0, 0, 0)
+                : rangeStart;
+
+        LocalDateTime end = (rangeEnd == null)
+                ? LocalDateTime.of(3000, 1, 1, 0, 0, 0)
+                : rangeEnd;
 
         if (start == null && end == null) {
             start = LocalDateTime.now();
