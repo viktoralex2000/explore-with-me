@@ -74,12 +74,12 @@ public class EventServiceImpl implements EventService {
         statsClient.hit(makeHitDto(request));
 
         LocalDateTime start = (rangeStart == null)
-                ? LocalDateTime.now().minusYears(100)
-                : rangeStart;
+                ? LocalDateTime.now().minusYears(100).withNano(0)
+                : rangeStart.withNano(0);
 
         LocalDateTime end = (rangeEnd == null)
-                ? LocalDateTime.now().plusYears(100)
-                : rangeEnd;
+                ? LocalDateTime.now().plusYears(100).withNano(0)
+                : rangeEnd.withNano(0);
 
         if (end.isBefore(start)) {
             throw new BadRequestException("rangeEnd must be after rangeStart");
