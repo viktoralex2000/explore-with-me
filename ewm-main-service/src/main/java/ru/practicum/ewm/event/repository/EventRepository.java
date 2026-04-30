@@ -18,8 +18,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("""
             select e from Event e
             where e.state = :state
-              and (:text is null or (lower(e.annotation) like lower(concat('%', :text, '%'))
-                    or lower(e.description) like lower(concat('%', :text, '%'))))
+              and (:text is null or (lower(cast(e.annotation as text)) like lower(concat('%', :text, '%'))
+                    or lower(cast(e.description as text)) like lower(concat('%', :text, '%'))))
               and (:categories is null or e.category.id in :categories)
               and (:paid is null or e.paid = :paid)
               and (cast(:rangeStart as timestamp) is null or e.eventDate >= cast(:rangeStart as timestamp))
