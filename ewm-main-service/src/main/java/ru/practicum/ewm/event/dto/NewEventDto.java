@@ -33,7 +33,7 @@ public class NewEventDto {
     private Boolean paid = false;
 
     @PositiveOrZero(message = "Participant limit must be zero or positive")
-    private Integer participantLimit;
+    private Integer participantLimit = 0;
 
     private Boolean requestModeration = true;
 
