@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.NewCompilationDto;
+import ru.practicum.ewm.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.compilation.mapper.CompilationMapper;
 import ru.practicum.ewm.compilation.model.Compilation;
 import ru.practicum.ewm.compilation.repository.CompilationRepository;
@@ -42,19 +43,19 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto update(Long compId, NewCompilationDto dto) {
+    public CompilationDto update(Long compId, UpdateCompilationRequest request) {
         Compilation compilation = getCompilation(compId);
 
-        if (dto.getTitle() != null) {
-            compilation.setTitle(dto.getTitle());
+        if (request.getTitle() != null) {
+            compilation.setTitle(request.getTitle());
         }
 
-        if (dto.getPinned() != null) {
-            compilation.setPinned(dto.getPinned());
+        if (request.getPinned() != null) {
+            compilation.setPinned(request.getPinned());
         }
 
-        if (dto.getEvents() != null) {
-            compilation.setEvents(fetchEvents(dto.getEvents()));
+        if (request.getEvents() != null) {
+            compilation.setEvents(fetchEvents(request.getEvents()));
         }
 
         return CompilationMapper.toCompilationDto(compilationRepository.save(compilation));
