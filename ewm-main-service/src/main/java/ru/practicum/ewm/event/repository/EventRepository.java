@@ -22,8 +22,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     or lower(e.description) like lower(concat('%', :text, '%'))))
               and (:categories is null or e.category.id in :categories)
               and (:paid is null or e.paid = :paid)
-              and (:rangeStart is null or e.eventDate >= :rangeStart)
-              and (:rangeEnd is null or e.eventDate <= :rangeEnd)
+              and (cast(:rangeStart as timestamp) is null or e.eventDate >= cast(:rangeStart as timestamp))
+              and (cast(:rangeEnd as timestamp) is null or e.eventDate <= cast(:rangeEnd as timestamp))
             """)
     Page<Event> searchPublic(@Param("state") EventState state,
                              @Param("text") String text,
