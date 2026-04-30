@@ -63,8 +63,8 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllPublic(String text,
                                             List<Long> categories,
                                             Boolean paid,
-                                            LocalDateTime rangeStart,
-                                            LocalDateTime rangeEnd,
+                                            String rangeStart,
+                                            String rangeEnd,
                                             boolean onlyAvailable,
                                             String sort,
                                             int from,
@@ -73,15 +73,14 @@ public class EventServiceImpl implements EventService {
 
         statsClient.hit(makeHitDto(request));
 
-        LocalDateTime start = (rangeStart == null)
-                ? LocalDateTime.now().minusYears(100).withNano(0)
-                : rangeStart.withNano(0);
+        LocalDateTime start = rangeStart;
+        LocalDateTime end = rangeEnd;
 
-        LocalDateTime end = (rangeEnd == null)
-                ? LocalDateTime.now().plusYears(100).withNano(0)
-                : rangeEnd.withNano(0);
+        if (start == null && end == null) {
+            start = LocalDateTime.now();
+        }
 
-        if (end.isBefore(start)) {
+        if (start != null && end != null && end.isBefore(start)) {
             throw new BadRequestException("rangeEnd must be after rangeStart");
         }
 

@@ -16,15 +16,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     @Query("""
-        select e from Event e
-        where e.state = :state
-          and (:text is null or (lower(e.annotation) like lower(concat('%', :text, '%'))
-                or lower(e.description) like lower(concat('%', :text, '%'))))
-          and (:categories is null or e.category.id in :categories)
-          and (:paid is null or e.paid = :paid)
-          and (e.eventDate >= :rangeStart)
-          and (e.eventDate <= :rangeEnd)
-        """)
+            select e from Event e
+            where e.state = :state
+              and (:text is null or (lower(e.annotation) like lower(concat('%', :text, '%'))
+                    or lower(e.description) like lower(concat('%', :text, '%'))))
+              and (:categories is null or e.category.id in :categories)
+              and (:paid is null or e.paid = :paid)
+              and (:rangeStart is null or e.eventDate >= :rangeStart)
+              and (:rangeEnd is null or e.eventDate <= :rangeEnd)
+            """)
     Page<Event> searchPublic(@Param("state") EventState state,
                              @Param("text") String text,
                              @Param("categories") List<Long> categories,
