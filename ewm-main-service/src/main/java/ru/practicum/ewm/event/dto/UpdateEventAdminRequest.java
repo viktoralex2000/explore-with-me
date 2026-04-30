@@ -1,5 +1,6 @@
 package ru.practicum.ewm.event.dto;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +22,7 @@ public class UpdateEventAdminRequest {
 
     private Boolean paid;
 
+    @PositiveOrZero(message = "Participant limit must be zero or positive")
     private Integer participantLimit;
 
     private Boolean requestModeration;

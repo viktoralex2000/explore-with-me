@@ -1,10 +1,7 @@
 package ru.practicum.ewm.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,7 +32,8 @@ public class NewEventDto {
 
     private Boolean paid = false;
 
-    private Integer participantLimit = 0;
+    @PositiveOrZero(message = "Participant limit must be zero or positive")
+    private Integer participantLimit;
 
     private Boolean requestModeration = true;
 
