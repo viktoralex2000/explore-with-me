@@ -41,7 +41,7 @@ public class StatsClient {
                                        String end,
                                        @Nullable List<String> uris,
                                        @Nullable Boolean unique) {
-        //Исправления мегаошибки 1
+
         String encodedStart = URLEncoder.encode(start, StandardCharsets.UTF_8);
         String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
 
@@ -49,7 +49,7 @@ public class StatsClient {
                 .path("/stats")
                 .queryParam("start", encodedStart)
                 .queryParam("end", encodedEnd);
-        //Исправления мегаошибки 1
+
         if (uris != null && !uris.isEmpty()) {
             builder.queryParam("uris", uris);
         }

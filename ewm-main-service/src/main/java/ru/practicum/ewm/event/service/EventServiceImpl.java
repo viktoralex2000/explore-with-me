@@ -137,10 +137,19 @@ public class EventServiceImpl implements EventService {
         if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("Event with id=" + eventId + " was not found");
         }
+        //Очередное исправление
+        LocalDateTime start = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime end = LocalDateTime.now();
 
-        Long views = getViewsForEvent(eventId);
-        event.setViews(views);
+        List<ViewStatsDto> stats = statsClient.getStats(
+                start.format(FORMATTER),
+                end.format(FORMATTER),
+                List.of("/events/" + eventId),
+                true
+        );
 
+        event.setViews(stats.isEmpty() ? 0L : stats.get(0).getHits());
+        //Очередное исправление
         return EventMapper.toEventFullDto(event);
     }
 
