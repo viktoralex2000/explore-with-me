@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
