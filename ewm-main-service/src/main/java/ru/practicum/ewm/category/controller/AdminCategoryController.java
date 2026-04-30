@@ -2,6 +2,7 @@ package ru.practicum.ewm.category.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.NewCategoryDto;
@@ -15,6 +16,7 @@ public class AdminCategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto create(@Valid @RequestBody NewCategoryDto dto) {
         return categoryService.create(dto);
     }
