@@ -12,6 +12,8 @@ import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,12 +41,15 @@ public class StatsClient {
                                        String end,
                                        @Nullable List<String> uris,
                                        @Nullable Boolean unique) {
+        //Исправления мегаошибки 1
+        String encodedStart = URLEncoder.encode(start, StandardCharsets.UTF_8);
+        String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverUrl)
                 .path("/stats")
-                .queryParam("start", start)
-                .queryParam("end", end);
-
+                .queryParam("start", encodedStart)
+                .queryParam("end", encodedEnd);
+        //Исправления мегаошибки 1
         if (uris != null && !uris.isEmpty()) {
             builder.queryParam("uris", uris);
         }
