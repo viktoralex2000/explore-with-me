@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,10 +9,12 @@ import lombok.Setter;
 @Setter
 public class UpdateEventUserRequest {
 
+    @Size(min = 20, max = 2000)
     private String annotation;
 
     private Long category;
 
+    @Size(min = 20, max = 7000)
     private String description;
 
     private String eventDate;
@@ -25,6 +28,7 @@ public class UpdateEventUserRequest {
 
     private Boolean requestModeration;
 
+    @Size(min = 3, max = 120)
     private String title;
 
     private String stateAction;

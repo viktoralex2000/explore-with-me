@@ -137,7 +137,7 @@ public class EventServiceImpl implements EventService {
         if (event.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("Event with id=" + eventId + " was not found");
         }
-        //Очередное исправление
+
         LocalDateTime start = LocalDateTime.now().minusMinutes(1);
         LocalDateTime end = LocalDateTime.now();
 
@@ -149,7 +149,7 @@ public class EventServiceImpl implements EventService {
         );
 
         event.setViews(stats.isEmpty() ? 0L : stats.get(0).getHits());
-        //Очередное исправление
+
         return EventMapper.toEventFullDto(event);
     }
 
