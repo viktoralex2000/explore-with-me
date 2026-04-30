@@ -1,5 +1,6 @@
 package ru.practicum.ewm.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -89,6 +90,15 @@ public class ErrorHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "Required parameter is missing: " + e.getParameterName(),
                 "status", HttpStatus.BAD_REQUEST.value(),
+                "timestamp", LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "error", "Integrity constraint violation",
+                "status", HttpStatus.CONFLICT.value(),
                 "timestamp", LocalDateTime.now()
         ));
     }

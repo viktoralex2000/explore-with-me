@@ -104,7 +104,7 @@ public class EventServiceImpl implements EventService {
         if (onlyAvailable) {
             events = events.stream()
                     .filter(e -> e.getParticipantLimit() == 0 ||
-                            e.getConfirmedRequests() < e.getParticipantLimit())
+                                 e.getConfirmedRequests() < e.getParticipantLimit())
                     .collect(Collectors.toList());
         }
 
@@ -271,12 +271,15 @@ public class EventServiceImpl implements EventService {
 
         RequestStatus status = RequestStatus.valueOf(request.getStatus());
 
-        List<ParticipationRequest> requests = requestRepository.findAllByIdIn(request.getRequestIds());
+        long confirmedCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+        if (status == RequestStatus.CONFIRMED && event.getParticipantLimit() != 0
+            && confirmedCount >= event.getParticipantLimit()) {
+            throw new ConflictException("The participant limit has been reached");
+        }
 
+        List<ParticipationRequest> requests = requestRepository.findAllByIdIn(request.getRequestIds());
         List<ParticipationRequestDto> confirmed = new ArrayList<>();
         List<ParticipationRequestDto> rejected = new ArrayList<>();
-
-        long confirmedCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
         for (ParticipationRequest pr : requests) {
             if (!pr.getEvent().getId().equals(eventId)) {
@@ -288,14 +291,9 @@ public class EventServiceImpl implements EventService {
             }
 
             if (status == RequestStatus.CONFIRMED) {
-                if (event.getParticipantLimit() != 0 && confirmedCount >= event.getParticipantLimit()) {
-                    pr.setStatus(RequestStatus.REJECTED);
-                    rejected.add(RequestMapper.toParticipationRequestDto(pr));
-                } else {
-                    pr.setStatus(RequestStatus.CONFIRMED);
-                    confirmed.add(RequestMapper.toParticipationRequestDto(pr));
-                    confirmedCount++;
-                }
+                pr.setStatus(RequestStatus.CONFIRMED);
+                confirmed.add(RequestMapper.toParticipationRequestDto(pr));
+                confirmedCount++;
             } else if (status == RequestStatus.REJECTED) {
                 pr.setStatus(RequestStatus.REJECTED);
                 rejected.add(RequestMapper.toParticipationRequestDto(pr));

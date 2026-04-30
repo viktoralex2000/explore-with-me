@@ -40,7 +40,7 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
 
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ForbiddenException("Initiator cannot create request to own event");
+            throw new ConflictException("Initiator cannot create request to own event");
         }
 
         if (event.getState() != EventState.PUBLISHED) {

@@ -1,6 +1,7 @@
 package ru.practicum.ewm.category.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         try {
             return CategoryMapper.toCategoryDto(categoryRepository.save(category));
-        } catch (RuntimeException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Category name must be unique");
         }
     }
@@ -54,10 +55,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(Long catId) {
-        if (!categoryRepository.existsById(catId)) {
-            throw new NotFoundException("Category with id=" + catId + " was not found");
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
+        try {
+            categoryRepository.delete(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Category is not empty");
         }
-        categoryRepository.deleteById(catId);
     }
 
     @Override
