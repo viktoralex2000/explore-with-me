@@ -12,6 +12,8 @@ public interface EventService {
     List<EventShortDto> getAllPublic(String text,
                                      List<Long> categories,
                                      Boolean paid,
+                                     String rangeStart,
+                                     String rangeEnd,
                                      boolean onlyAvailable,
                                      String sort,
                                      int from,
