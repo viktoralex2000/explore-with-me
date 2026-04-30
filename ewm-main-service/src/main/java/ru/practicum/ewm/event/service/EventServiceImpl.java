@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
         this.statsClient = statsClient;
     }
 
-    @Override
+    /*@Override
     public List<EventShortDto> getAllPublic(String text,
                                             List<Long> categories,
                                             Boolean paid,
@@ -80,6 +80,81 @@ public class EventServiceImpl implements EventService {
         LocalDateTime end = rangeEnd == null
                 ? LocalDateTime.now().plusYears(100)
                 : LocalDateTime.parse(rangeEnd, FORMATTER);
+
+        if (end.isBefore(start)) {
+            throw new BadRequestException("rangeEnd must be after rangeStart");
+        }
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        List<Event> events = eventRepository.searchPublic(
+                EventState.PUBLISHED,
+                text,
+                (categories == null || categories.isEmpty()) ? null : categories,
+                paid,
+                start,
+                end,
+                pageable
+        ).getContent();
+
+        if (onlyAvailable) {
+            events = events.stream()
+                    .filter(e -> e.getParticipantLimit() == 0 ||
+                            e.getConfirmedRequests() < e.getParticipantLimit())
+                    .collect(Collectors.toList());
+        }
+
+        Map<Long, Long> views = getViewsForEvents(events);
+
+        for (Event event : events) {
+            event.setViews(views.getOrDefault(event.getId(), 0L));
+        }
+
+        List<EventShortDto> result = events.stream()
+                .map(EventMapper::toEventShortDto)
+                .collect(Collectors.toList());
+
+        if ("VIEWS".equalsIgnoreCase(sort)) {
+            result.sort(Comparator.comparing(EventShortDto::getViews).reversed());
+        } else if ("EVENT_DATE".equalsIgnoreCase(sort)) {
+            result.sort(Comparator.comparing(EventShortDto::getEventDate));
+        }
+
+        return result;
+    }*/
+
+    @Override
+    public List<EventShortDto> getAllPublic(String text,
+                                            List<Long> categories,
+                                            Boolean paid,
+                                            String rangeStart,
+                                            String rangeEnd,
+                                            boolean onlyAvailable,
+                                            String sort,
+                                            int from,
+                                            int size,
+                                            HttpServletRequest request) {
+
+        statsClient.hit(makeHitDto(request));
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        try {
+            start = (rangeStart == null || rangeStart.isBlank())
+                    ? LocalDateTime.now().minusYears(100)
+                    : LocalDateTime.parse(rangeStart, FORMATTER);
+        } catch (Exception e) {
+            start = LocalDateTime.now().minusYears(100);
+        }
+
+        try {
+            end = (rangeEnd == null || rangeEnd.isBlank())
+                    ? LocalDateTime.now().plusYears(100)
+                    : LocalDateTime.parse(rangeEnd, FORMATTER);
+        } catch (Exception e) {
+            end = LocalDateTime.now().plusYears(100);
+        }
 
         if (end.isBefore(start)) {
             throw new BadRequestException("rangeEnd must be after rangeStart");
