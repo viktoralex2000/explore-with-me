@@ -27,14 +27,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto create(NewCategoryDto dto) {
+        if (categoryRepository.existsByName(dto.getName())) {
+            throw new ConflictException("Category name must be unique");
+        }
+
         Category category = new Category();
         category.setName(dto.getName());
 
-        try {
-            return CategoryMapper.toCategoryDto(categoryRepository.save(category));
-        } catch (RuntimeException e) {
-            throw new ConflictException("Category name must be unique");
-        }
+        return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
     @Override
@@ -43,22 +43,24 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
 
-        category.setName(dto.getName());
-
-        try {
-            return CategoryMapper.toCategoryDto(categoryRepository.save(category));
-        } catch (DataIntegrityViolationException e) {
+        if (!category.getName().equals(dto.getName()) && categoryRepository.existsByName(dto.getName())) {
             throw new ConflictException("Category name must be unique");
         }
+
+        category.setName(dto.getName());
+
+        return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
     @Override
     @Transactional
     public void delete(Long catId) {
-        Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException("Category with id=" + catId + " was not found");
+        }
+
         try {
-            categoryRepository.delete(category);
+            categoryRepository.deleteById(catId);
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Category is not empty");
         }
@@ -67,7 +69,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> getAll(int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
-
         return categoryRepository.findAll(pageable).stream()
                 .map(CategoryMapper::toCategoryDto)
                 .collect(Collectors.toList());
@@ -77,7 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getById(Long catId) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
-
         return CategoryMapper.toCategoryDto(category);
     }
 }
