@@ -1,3 +1,3 @@
 FROM eclipse-temurin:21-jre-jammy
-COPY target/*.jar app.jar
+COPY ewm-main-service/target/*.jar /app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -1,25 +1,30 @@
 package ru.practicum.ewm.stats.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.stats.dto.EndpointHitDto;
 import ru.practicum.ewm.stats.dto.ViewStatsDto;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class StatsClient {
 
     private final RestTemplate restTemplate;
     private final String serverUrl;
 
-    public StatsClient(RestTemplate restTemplate, String serverUrl) {
-        this.restTemplate = restTemplate;
+    public StatsClient(@Value("${stats.server.url}") String serverUrl) {
+        this.restTemplate = new RestTemplate();
         this.serverUrl = serverUrl;
     }
 
@@ -37,10 +42,13 @@ public class StatsClient {
                                        @Nullable List<String> uris,
                                        @Nullable Boolean unique) {
 
+        String encodedStart = URLEncoder.encode(start, StandardCharsets.UTF_8);
+        String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
+
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serverUrl)
                 .path("/stats")
-                .queryParam("start", start)
-                .queryParam("end", end);
+                .queryParam("start", encodedStart)
+                .queryParam("end", encodedEnd);
 
         if (uris != null && !uris.isEmpty()) {
             builder.queryParam("uris", uris);
