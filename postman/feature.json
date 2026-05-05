@@ -1,0 +1,1115 @@
+{
+  "info": {
+    "_postman_id": "bd987134-840d-4f65-bee2-3df81225f105",
+    "name": "ExploreWithMe - Comments Feature",
+    "description": "Тесты для дополнительной функциональности: комментарии к событиям с модерацией",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52625098",
+    "_collection_link": "https://go.postman.co/collection/52625098-bd987134-840d-4f65-bee2-3df81225f105?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Create user (author)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Comment Author\",\n  \"email\": \"author@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/admin/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "1. Create user (author)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Comment Author\",\n  \"email\": \"author@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/admin/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
+    },
+    {
+      "name": "2. Create admin user",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/admin/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Create category",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Concerts\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/admin/categories",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Create event",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"annotation\": \"Test event for comments feature\",\n  \"category\": 1,\n  \"description\": \"This is a test event to check comments functionality\",\n  \"eventDate\": \"2026-06-01 12:00:00\",\n  \"location\": {\n    \"lat\": 55.751244,\n    \"lon\": 37.618423\n  },\n  \"paid\": false,\n  \"participantLimit\": 100,\n  \"requestModeration\": true,\n  \"title\": \"Test Event for Comments\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Publish event",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"stateAction\": \"PUBLISH_EVENT\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/admin/events/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Add comment - should be PENDING",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Comment should have state PENDING\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('state');",
+              "    pm.expect(jsonData.state).to.eql('PENDING');",
+              "});",
+              "",
+              "pm.test(\"Comment should have id, text, author, eventId, created\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('text');",
+              "    pm.expect(jsonData).to.have.property('author');",
+              "    pm.expect(jsonData).to.have.property('eventId');",
+              "    pm.expect(jsonData).to.have.property('created');",
+              "});",
+              "",
+              "// Store comment id and event id for next tests",
+              "const jsonData = pm.response.json();",
+              "pm.environment.set(\"commentId\", jsonData.id);",
+              "pm.environment.set(\"eventId\", jsonData.eventId);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Great event! Looking forward to it.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events/1/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "1",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. Get comments before approval - should be empty",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be an empty array\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.eql(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/events/1/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "1",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "8. Get pending comments for moderation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be an array with 1 comment\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.be.at.least(1);",
+              "});",
+              "",
+              "pm.test(\"Comment should have state PENDING\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        pm.expect(jsonData[0]).to.have.property('state');",
+              "        pm.expect(jsonData[0].state).to.eql('PENDING');",
+              "    }",
+              "});",
+              "",
+              "// Store comment id for next tests if not already stored",
+              "const jsonData = pm.response.json();",
+              "if (jsonData.length > 0 && !pm.environment.get(\"commentId\")) {",
+              "    pm.environment.set(\"commentId\", jsonData[0].id);",
+              "}",
+              "if (!pm.environment.get(\"eventId\") && jsonData.length > 0) {",
+              "    pm.environment.set(\"eventId\", jsonData[0].eventId);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/admin/comments?state=PENDING",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments"
+          ],
+          "query": [
+            {
+              "key": "state",
+              "value": "PENDING"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "9. Approve comment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Comment should have state PUBLISHED after approval\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('state');",
+              "    pm.expect(jsonData.state).to.eql('PUBLISHED');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/admin/comments/{{commentId}}/approve",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments",
+            "{{commentId}}",
+            "approve"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10. Get comments after approval - comment should be visible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be an array with 1 comment\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.eql(1);",
+              "});",
+              "",
+              "pm.test(\"Comment should have state PUBLISHED\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        pm.expect(jsonData[0]).to.have.property('state');",
+              "        pm.expect(jsonData[0].state).to.eql('PUBLISHED');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/events/{{eventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "{{eventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11. Add second comment - should be PENDING",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Second comment should have state PENDING\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('state');",
+              "    pm.expect(jsonData.state).to.eql('PENDING');",
+              "});",
+              "",
+              "// Store second comment id",
+              "const jsonData = pm.response.json();",
+              "pm.environment.set(\"secondCommentId\", jsonData.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"This is my second comment, waiting for moderation.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events/{{eventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "{{eventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12. Reject second comment with reason",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Rejected comment should have state REJECTED\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('state');",
+              "    pm.expect(jsonData.state).to.eql('REJECTED');",
+              "});",
+              "",
+              "pm.test(\"Rejected comment should have rejection reason\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('rejectionReason');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rejectionReason\": \"Contains inappropriate language\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/admin/comments/{{secondCommentId}}/reject",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments",
+            "{{secondCommentId}}",
+            "reject"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "13. Get comments - only approved comment visible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be an array with 1 comment (only approved)\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.eql(1);",
+              "});",
+              "",
+              "pm.test(\"Visible comment should have state PUBLISHED\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        pm.expect(jsonData[0].state).to.eql('PUBLISHED');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/events/{{eventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "{{eventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "14. Get rejected comments for moderation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be an array with rejected comment\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.be.at.least(1);",
+              "});",
+              "",
+              "pm.test(\"Comment should have state REJECTED and rejection reason\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        const rejectedComment = jsonData.find(c => c.id == pm.environment.get(\"secondCommentId\"));",
+              "        if (rejectedComment) {",
+              "            pm.expect(rejectedComment.state).to.eql('REJECTED');",
+              "            pm.expect(rejectedComment).to.have.property('rejectionReason');",
+              "        }",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/admin/comments?state=REJECTED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments"
+          ],
+          "query": [
+            {
+              "key": "state",
+              "value": "REJECTED"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "15. Author edits rejected comment - should become PENDING again",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Edited comment should have state PENDING\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('state');",
+              "    pm.expect(jsonData.state).to.eql('PENDING');",
+              "});",
+              "",
+              "pm.test(\"Comment text should be updated\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.text).to.eql('I have edited my comment to remove inappropriate content.');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"I have edited my comment to remove inappropriate content.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/comments/{{secondCommentId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "comments",
+            "{{secondCommentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "16. Try to approve already approved comment - should get 409",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 409 Conflict\", function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Response should contain error message\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/admin/comments/{{commentId}}/approve",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments",
+            "{{commentId}}",
+            "approve"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "17a - Create unpublished event",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "const jsonData = pm.response.json();\r",
+              "pm.environment.set(\"unpublishedEventId\", jsonData.id);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"annotation\": \"Test event for unpublished comment check\",\r\n  \"category\": 1,\r\n  \"description\": \"This event will not be published for comment test\",\r\n  \"eventDate\": \"2026-06-01 12:00:00\",\r\n  \"location\": {\r\n    \"lat\": 55.751244,\r\n    \"lon\": 37.618423\r\n  },\r\n  \"paid\": false,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": true,\r\n  \"title\": \"Unpublished Event For Comment Test\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "17b: Try to add comment to unpublished event",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 409 Conflict\", function () {\r",
+              "    pm.response.to.have.status(409);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain error message\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('error');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"text\": \"This comment should be rejected because event is not published\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events/{{unpublishedEventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "{{unpublishedEventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "18. Try to edit another user's comment - should get 403",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403 Forbidden\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Trying to edit someone else's comment\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/999/comments/{{commentId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "999",
+            "comments",
+            "{{commentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "19. Admin deletes comment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204 No Content\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/admin/comments/{{secondCommentId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "admin",
+            "comments",
+            "{{secondCommentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "20. Author deletes his own comment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204 No Content\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/users/1/comments/{{commentId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "comments",
+            "{{commentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "21. Add comment with too long text (1000+ chars) - should get 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Response should contain error message about size\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events/{{eventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "{{eventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "20. Add comment with empty text - should get 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response should be valid JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test(\"Response should contain error message\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/users/1/events/{{eventId}}/comments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "users",
+            "1",
+            "events",
+            "{{eventId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

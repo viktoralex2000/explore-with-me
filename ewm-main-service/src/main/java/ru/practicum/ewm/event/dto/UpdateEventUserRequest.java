@@ -2,11 +2,9 @@ package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class UpdateEventUserRequest {
 
     @Size(min = 20, max = 2000)
