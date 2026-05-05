@@ -1,13 +1,11 @@
 package ru.practicum.ewm.category.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
+@Data
 public class CategoryDto {
 
     private Long id;

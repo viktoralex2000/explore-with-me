@@ -10,8 +10,6 @@ import ru.practicum.ewm.comment.model.CommentState;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findAllByEventIdAndState(Long eventId, CommentState state, Pageable pageable);
-
     @Query("SELECT c FROM Comment c WHERE " +
            "(:state IS NULL OR c.state = :state) AND " +
            "(:eventId IS NULL OR c.event.id = :eventId)")

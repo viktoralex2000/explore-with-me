@@ -1,10 +1,8 @@
 package ru.practicum.ewm.event.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class LocationDto {
 
     private Double lat;

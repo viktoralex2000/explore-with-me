@@ -1,13 +1,11 @@
 package ru.practicum.ewm.event.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class EventRequestStatusUpdateResult {
 
     private List<ParticipationRequestDto> confirmedRequests;

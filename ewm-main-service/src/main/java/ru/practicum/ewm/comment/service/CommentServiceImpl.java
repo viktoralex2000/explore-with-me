@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
 
-        if (!eventRepository.existsByIdAndState(eventId, EventState.PUBLISHED)) {
+        if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Cannot add comment to unpublished event");
         }
 
@@ -61,6 +61,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto updateComment(Long userId, Long commentId, UpdateCommentDto dto) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with id=" + userId + " was not found");
+        }
+
         Comment comment = getComment(commentId);
 
         if (!comment.getAuthor().getId().equals(userId)) {
@@ -135,7 +140,7 @@ public class CommentServiceImpl implements CommentService {
 
         Pageable pageable = PageRequest.of(from / size, size);
 
-        return commentRepository.findAllByEventIdAndState(eventId, CommentState.PUBLISHED, pageable)
+        return commentRepository.findAllForModeration(CommentState.PUBLISHED, eventId, pageable)
                 .stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());

@@ -1,12 +1,10 @@
 package ru.practicum.ewm.event.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.user.dto.UserDto;
 
-@Getter
-@Setter
+@Data
 public class EventShortDto {
 
     private Long id;
