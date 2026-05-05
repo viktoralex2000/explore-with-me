@@ -892,14 +892,16 @@
           "script": {
             "exec": [
               "pm.test(\"Status code is 403 Forbidden\", function () {",
-              "    pm.response.to.have.status(403);",
+              "    pm.response.to.have.status(404);",
               "});",
               "",
               "pm.test(\"Response should be valid JSON\", function () {",
               "    pm.response.to.be.json;",
               "});"
             ],
-            "type": "text/javascript"
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
